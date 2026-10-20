@@ -278,6 +278,9 @@ p{line-height:1.55}
 .sec-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
 .sec-head img{width:56px;height:56px;flex:none;filter:drop-shadow(0 0 10px rgba(0,0,0,.4))}
 .sec-t{flex:1;min-width:0} .sec-t b{display:block;font-size:17px;color:var(--hue)} .sec-t small{display:block;font-size:12.5px;color:var(--ink-2);line-height:1.35}
+.gem-head{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:0 7px;font-weight:800;font-size:15px;color:#bdf3ff;padding:2px 2px 6px}
+.gem-head .ic{width:18px;height:18px;flex:0 0 auto}
+.gem-head small{flex:1 1 100%;font-weight:500;font-size:11px;color:var(--dim);margin-top:3px}
 .sec-stars{display:inline-flex;align-items:center;gap:4px;font-weight:700;font-size:13.5px;font-variant-numeric:tabular-nums;flex:none}
 .sec-stars span{width:16px;height:16px;color:var(--amber)}
 .sector.locked{opacity:.62} .sector.locked .sec-t b{color:var(--ink-2)}
@@ -317,7 +320,6 @@ html.watch .w-arc-title{font-size:6.1px;letter-spacing:1px;text-transform:upperc
 html.watch .w-arc-title.danger{fill:#ff8597}
 html.watch .w-clock{z-index:4}
 html.watch .w-clock text{font-size:6.6px;letter-spacing:.5px;fill:#d6e6ff}
-html.watch .w-arc-logo{font-size:6.6px;letter-spacing:1.2px;fill:#c3fbf3;filter:drop-shadow(0 0 1.4px rgba(79,209,197,.9))}
 
 /* ---- shared controls */
 html.watch .w-back{position:absolute;left:50%;top:12.5%;transform:translateX(-50%);width:calc(var(--u)*10);height:calc(var(--u)*10);border-radius:50%;border:0;
@@ -545,7 +547,7 @@ html.watch .w-dlg-lab span{width:calc(var(--u)*16);text-align:center;font-size:c
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><radialGradient id="rz-coin" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#fff2c4"/><stop offset=".5" stop-color="#f2b84b"/><stop offset="1" stop-color="#a0680f"/></radialGradient></defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="rz-gem" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9ef8ff"/><stop offset=".5" stop-color="#3fd0ff"/><stop offset="1" stop-color="#7b6cff"/></linearGradient><radialGradient id="rz-coin" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#fff2c4"/><stop offset=".5" stop-color="#f2b84b"/><stop offset="1" stop-color="#a0680f"/></radialGradient></defs></svg>
 <div id="app">
   <div id="w-dialog" class="w-dlg" role="dialog" aria-modal="true"></div>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -581,7 +583,6 @@ html.watch .w-dlg-lab span{width:calc(var(--u)*16);text-align:center;font-size:c
       <div class="w-home">
         <div class="menu-hero" id="menu-hero"></div>
         <button class="w-play" id="m-play"><span class="w-play-ic" data-i="play"></span><b>Play</b><small id="m-play-sub">Level 1</small></button>
-        <svg class="w-arc" viewBox="0 0 100 100" aria-hidden="true"><text class="w-arc-logo"><textPath href="#wp-bot" startOffset="50%" text-anchor="middle">RING · BLAST · ZERO</textPath></text></svg>
         <span class="w-more" data-i="down" aria-hidden="true"></span>
       </div>
       <div class="w-list">
@@ -627,7 +628,7 @@ html.watch .w-dlg-lab span{width:calc(var(--u)*16);text-align:center;font-size:c
   <section class="screen dim" id="s-missions">
     <div class="sheet">
       <div class="sheet-head"><button class="round-btn" data-back aria-label="Back"><span data-i="back"></span></button><h2>Missions</h2>
-        <span class="chip sm"><span data-i="coin"></span><b class="coins">0</b></span></div>
+        <span class="chip sm"><span data-i="coin"></span><b class="coins">0</b></span><span class="chip sm"><span data-i="gem"></span><b class="gems">0</b></span></div>
       <div class="sheet-body">
         <div class="section-t" style="margin-top:4px">Daily reward</div>
         <div class="daily" id="daily-strip"></div>
@@ -643,9 +644,9 @@ html.watch .w-dlg-lab span{width:calc(var(--u)*16);text-align:center;font-size:c
   <section class="screen dim" id="s-shop">
     <div class="sheet">
       <div class="sheet-head"><button class="round-btn" data-back aria-label="Back"><span data-i="back"></span></button><h2>Shop</h2>
-        <span class="chip sm"><span data-i="coin"></span><b class="coins">0</b></span></div>
+        <span class="chip sm"><span data-i="coin"></span><b class="coins">0</b></span><span class="chip sm"><span data-i="gem"></span><b class="gems">0</b></span></div>
       <div class="sheet-body">
-        <div class="tabs" id="shop-tabs"><button class="tab on" data-tab="skin">Nodes</button><button class="tab" data-tab="theme">Themes</button><button class="tab" data-tab="boost">Boosters</button></div>
+        <div class="tabs" id="shop-tabs"><button class="tab on" data-tab="skin">Nodes</button><button class="tab" data-tab="theme">Themes</button><button class="tab" data-tab="boost">Boosters</button><button class="tab" data-tab="gem">Gems</button></div>
         <div class="grid2" id="shop-grid"></div>
       </div>
     </div>
@@ -923,7 +924,7 @@ const BOOSTERS = {
 };
 const RANK_TITLES = ['Cadet','Pilot','Operator','Warden','Sentinel','Architect','Keeper'];
 const xpForRank = r => Math.round(220*Math.pow(r,1.45));
-const DAILY = [{c:20},{c:30},{c:40},{c:60},{c:80},{c:100},{c:150,b:'nova'}];
+const DAILY = [{c:20},{c:30},{c:40},{c:60},{c:80},{c:100},{c:150,b:'nova',g:10}];
 
 const MISSION_POOL = {
   pop:     {t:n=>`Pop ${fmt(n)} nodes`,                 stat:'pops',       tiers:[80,160,300],  r:[40,60,90]},
@@ -978,7 +979,7 @@ const Store = {
   del(k){ try{ localStorage.removeItem(k); }catch(e){ delete mem[k]; } },
 };
 const defaultSave = () => ({
-  v:3, coins:50, xp:0, rank:1, endlessBest:0, endlessLevel:0, levels:{}, unlocked:1, seenSector:1,
+  v:3, coins:50, gems:0, track:[], xp:0, rank:1, endlessBest:0, endlessLevel:0, levels:{}, unlocked:1, seenSector:1,
   owned:{skin:['glass'], theme:['deep']}, equip:{skin:'glass', theme:'deep'},
   boosters:{wild:1, bomb:0, slow:0, nova:0},
   settings:{sfx:true, music:!WATCH, haptics:true, quality:WATCH?'low':'high', aim:true, symbols:false},
@@ -1019,6 +1020,7 @@ const ICON = {
   orbit: S('<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.5" stroke-dasharray="7 3"/><circle cx="12" cy="12" r="10" stroke-dasharray="11 4"/>'),
   play:  S('<path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/>','stroke="none"'),
   cal:   S('<rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/><circle cx="12" cy="15" r="1.6" fill="currentColor"/>'),
+  gem:   `<svg viewBox="0 0 24 24" width="100%" height="100%"><path d="M7 3.2h10l3.8 5.9L12 20.8 3.2 9.1z" fill="url(#rz-gem)"/><path d="M7 3.2l5 5.9 5-5.9M3.2 9.1h17.6M12 9.1v11.7" fill="none" stroke="#d6f7ff" stroke-width="1" opacity=".7"/></svg>`,
 };
 function paintIcons(root=document){ root.querySelectorAll('[data-i]').forEach(el=>{ if(!el.dataset.painted){ el.innerHTML = ICON[el.dataset.i]||''; el.dataset.painted='1'; }}); }
 const icon = (n, cls='') => `<span data-i="${n}" data-painted="1" class="${cls}">${ICON[n]}</span>`;
@@ -1604,7 +1606,13 @@ function sBase(skin, col, r){
       x.globalCompositeOperation='lighter'; x.fillStyle=g; x.fill();
     } else {
       const g=x.createRadialGradient(-r*.38,-r*.42,r*.04,0,0,r*1.02);
-      g.addColorStop(0,shade(col,skin==='candy'?.3:.55)); g.addColorStop(.42,col); g.addColorStop(.86,shade(col,-.42)); g.addColorStop(1,shade(col,-.68));
+      const lift = skin==='candy' ? .32 : .58;
+      g.addColorStop(0,   shade(col, lift));
+      g.addColorStop(.20, shade(col, lift*.52));
+      g.addColorStop(.44, col);
+      g.addColorStop(.68, shade(col,-.20));
+      g.addColorStop(.87, shade(col,-.47));
+      g.addColorStop(1,   shade(col,-.72));
       x.fillStyle=g; x.fill();
     }
   });
@@ -1625,12 +1633,35 @@ function sOver(skin, r){
     x.fillStyle=g; x.beginPath(); x.arc(0,0,r*.32,0,TAU); x.fill(); x.restore();
     if(skin==='chrome'){ x.fillStyle='rgba(255,255,255,.75)'; x.beginPath(); x.ellipse(-r*.3,-r*.5,r*.2,r*.08,-0.5,0,TAU); x.fill(); }
     x.fillStyle='rgba(255,255,255,.55)'; x.beginPath(); x.arc(r*.45,r*.5,r*.07,0,TAU); x.fill();
+    // Rim light hugging the lower-right edge: wide faint pass, then a thin bright one.
+    const rim=x.createLinearGradient(-r*.55,r*.05,r*.8,r*.6);
+    rim.addColorStop(0,'rgba(150,205,255,0)');
+    rim.addColorStop(.34,'rgba(186,226,255,.26)');
+    rim.addColorStop(.72,'rgba(216,241,255,.40)');
+    rim.addColorStop(1,'rgba(190,225,255,0)');
+    x.globalCompositeOperation='lighter'; x.lineCap='round'; x.strokeStyle=rim;
+    x.lineWidth=r*.17; x.beginPath(); x.arc(0,0,r*.90,0.18,Math.PI*0.99); x.stroke();
+    x.lineWidth=r*.06; x.beginPath(); x.arc(0,0,r*.945,0.25,Math.PI*0.95); x.stroke();
+    x.globalCompositeOperation='source-over';
     x.restore();
-    x.strokeStyle='rgba(0,0,0,.4)'; x.lineWidth=0.8; x.beginPath(); x.arc(0,0,r-0.4,0,TAU); x.stroke();
+    const ol=x.createLinearGradient(-r*.6,-r*.7,r*.6,r*.7);
+    ol.addColorStop(0,'rgba(0,0,0,.55)'); ol.addColorStop(.55,'rgba(0,0,0,.32)'); ol.addColorStop(1,'rgba(178,216,255,.30)');
+    x.strokeStyle=ol; x.lineWidth=0.9; x.beginPath(); x.arc(0,0,r-0.45,0,TAU); x.stroke();
   });
 }
-const sShadow = r => spr('sh', r, r*0.7, (x,r)=>{ const g=x.createRadialGradient(0,0,0,0,0,r*1.35); g.addColorStop(0,'rgba(0,0,0,.6)'); g.addColorStop(.6,'rgba(0,0,0,.25)'); g.addColorStop(1,'rgba(0,0,0,0)'); x.fillStyle=g; x.beginPath(); x.arc(0,0,r*1.35,0,TAU); x.fill(); });
-const sGlow = (col, r) => spr('g'+col, r, r*1.7, (x,r)=>{ const g=x.createRadialGradient(0,0,0,0,0,r*2.6); g.addColorStop(0,rgba(col,.55)); g.addColorStop(.4,rgba(col,.16)); g.addColorStop(1,rgba(col,0)); x.fillStyle=g; x.beginPath(); x.arc(0,0,r*2.6,0,TAU); x.fill(); });
+const sShadow = r => spr('sh', r, r*0.7, (x,r)=>{
+  x.save(); x.translate(0, r*0.10); x.scale(1, 0.80);
+  const g=x.createRadialGradient(0,0,0,0,0,r*1.35);
+  g.addColorStop(0,'rgba(0,0,0,.62)'); g.addColorStop(.42,'rgba(0,0,0,.34)');
+  g.addColorStop(.70,'rgba(0,0,0,.13)'); g.addColorStop(1,'rgba(0,0,0,0)');
+  x.fillStyle=g; x.beginPath(); x.arc(0,0,r*1.35,0,TAU); x.fill(); x.restore();
+});
+const sGlow = (col, r) => spr('g'+col, r, r*1.7, (x,r)=>{
+  const g=x.createRadialGradient(0,0,0,0,0,r*2.6);
+  g.addColorStop(0,rgba(col,.58)); g.addColorStop(.16,rgba(col,.36)); g.addColorStop(.34,rgba(col,.18));
+  g.addColorStop(.56,rgba(col,.07)); g.addColorStop(.78,rgba(col,.02)); g.addColorStop(1,rgba(col,0));
+  x.fillStyle=g; x.beginPath(); x.arc(0,0,r*2.6,0,TAU); x.fill();
+});
 
 /* ============================= NODE (BALL) RENDERING ============================= */
 const BAND = {
@@ -2975,7 +3006,7 @@ function nextToast(){
   $('#toasts').appendChild(t);
   setTimeout(()=>{ t.remove(); toastQ.shift(); nextToast(); }, 2200);
 }
-function updateCoins(){ $$('.coins').forEach(e=>e.textContent=fmt(save.coins)); }
+function updateCoins(){ $$('.coins').forEach(e=>e.textContent=fmt(save.coins)); $$('.gems').forEach(e=>e.textContent=fmt(save.gems)); }
 
 /* ============================= PROGRESSION ============================= */
 const rankTitle = r => RANK_TITLES[Math.min(RANK_TITLES.length-1, Math.floor((r-1)/3))];
@@ -3019,6 +3050,7 @@ function claimDaily(){
   const st = dailyState(); if(!st.can) return null;
   const R = DAILY[st.idx];
   save.coins += R.c; save.stats.coinsEarned += R.c;
+  if(R.g) save.gems += R.g;
   if(R.b) save.boosters[R.b] = (save.boosters[R.b]||0) + 1;
   save.daily.last = todayKey(); save.daily.streak = st.streak; save.daily.best = Math.max(save.daily.best, st.streak);
   persist(); Sound.coin(); setTimeout(()=>Sound.coin(), 140); buzz(20);
@@ -3053,6 +3085,66 @@ function checkAchievements(){
   if(k){ persist(); updateCoins(); }
 }
 function totalStars(){ return Object.values(save.levels).reduce((a,l)=>a+(l.stars||0),0); }
+
+/* ===================== STAR TRACK & GEMS =====================
+   Stars are the spine of progression: every level pays 1-3, and the track turns the
+   running total into the next visible goal, so there is always a reward a few levels
+   away. Gems come from the track, the 7-day streak and milestones.
+
+   Balance rules, deliberately:
+   - Gems buy convenience and cosmetics, never power or progress.
+   - Revive stays on coins, so there is no prompt to pay at the moment of failure.
+   - No energy, no timers, no randomised paid rewards.
+   Everything below can be earned by playing; money only skips the grind.          */
+const STAR_TRACK = [
+  {at:6,   c:150},
+  {at:15,  b:{wild:1, slow:1}},
+  {at:27,  g:8},
+  {at:42,  c:300},
+  {at:60,  g:12},
+  {at:81,  b:{bomb:2, nova:1}},
+  {at:105, g:18},
+  {at:132, c:600},
+  {at:160, g:25},
+  {at:180, g:40},
+];
+const trackNext = () => STAR_TRACK.find(m => !save.track.includes(m.at)) || null;
+const trackLabel = m => m ? (m.g ? `${m.g} gems` : m.c ? `${m.c} coins` : 'Booster pack') : '';
+
+function checkStarTrack(){
+  const t = totalStars(); let k = 0;
+  for(const m of STAR_TRACK){
+    if(save.track.includes(m.at) || t < m.at) continue;
+    save.track.push(m.at);
+    if(m.c){ save.coins += m.c; save.stats.coinsEarned += m.c; }
+    if(m.g){ save.gems  += m.g; }
+    if(m.b){ for(const bk in m.b) save.boosters[bk] = (save.boosters[bk]||0) + m.b[bk]; }
+    const what = trackLabel(m);
+    setTimeout(()=>{ toast(`${m.at} stars reached`, `+${what}`, m.g?'gem':m.c?'coin':'bolt'); Sound.coin(); buzz(18); },
+               900 + k++*750);
+  }
+  if(k){ persist(); updateCoins(); }
+}
+
+/* Gems only ever buy these: coins, boosters, and nothing that gates a level. */
+const GEM_SHOP = [
+  {id:'c400',  gems:10, name:'400 coins',   desc:'Skip a little grinding',        give:()=>{ save.coins += 400; save.stats.coinsEarned += 400; }},
+  {id:'c1100', gems:24, name:'1,100 coins', desc:'Best value exchange',           give:()=>{ save.coins += 1100; save.stats.coinsEarned += 1100; }},
+  {id:'bpack', gems:18, name:'Booster pack',desc:'Two of every booster',          give:()=>{ for(const bk in BOOSTERS) save.boosters[bk] = (save.boosters[bk]||0) + 2; }},
+];
+
+function spendGems(id){
+  const it = GEM_SHOP.find(x=>x.id===id); if(!it) return;
+  if(save.gems < it.gems){
+    Sound.beep();
+    const n = trackNext();
+    toast('Not enough gems', n ? `Next ${trackLabel(n)} at ${n.at} stars` : 'Earn gems from the star track', 'gem');
+    return;
+  }
+  save.gems -= it.gems; it.give();
+  persist(); Sound.coin(); buzz(15); updateCoins(); Render.shop(); Render.menu();
+  toast(it.name, 'Added to your account', 'gem');
+}
 
 /* Applies everything earned since the last call, so a revived run is never counted twice. */
 const FIN_KEYS = ['score','pops','shots','hits','armor','powers','bombs','t','threads','novas','outerPops','closeCalls'];
@@ -3102,7 +3194,7 @@ function finalizeRun(win){
   }
   save.coins += coins; S.coinsEarned += coins;
   const ups = addXP(xp);
-  persist(); checkAchievements(); updateCoins();
+  persist(); checkAchievements(); checkStarTrack(); updateCoins();
   return {coins, xp, firstClear, newStars, ups, dailyBonus, newBest: run.score > run.prevBest && run.score>0};
 }
 
@@ -3238,7 +3330,7 @@ const Render = {
       const got = st.can ? i<st.idx : i<=st.idx, today = st.can && i===st.idx;
       return `<div class="dday${got?' got':''}${today?' today':''}">Day ${i+1}${icon(d.b?'gift':got?'check':'coin')}<b>${d.c}</b></div>`;
     }).join('');
-    const db = $('#daily-claim'); db.disabled = !st.can; db.textContent = st.can ? `Claim day ${st.idx+1}: +${DAILY[st.idx].c} coins` : 'Come back tomorrow';
+    const db = $('#daily-claim'); db.disabled = !st.can; db.textContent = st.can ? `Claim day ${st.idx+1}: +${DAILY[st.idx].c} coins${DAILY[st.idx].g?` and ${DAILY[st.idx].g} gems`:''}` : 'Come back tomorrow';
     $('#mission-list').innerHTML = save.missions.map((m,i)=>{
       const P = MISSION_POOL[m.k], p = Math.min(m.target, mProg(m)), done = p>=m.target;
       return `<div class="card mission${done?' done':''}"><div class="mt"><b>${esc(P.t(m.target))}</b><small>${fmt(p)} / ${fmt(m.target)}</small><div class="mbar"><i style="width:${p/m.target*100}%"></i></div></div>
@@ -3256,6 +3348,24 @@ const Render = {
     else if(shopTab==='theme') for(const [k,T] of Object.entries(THEMES)){
       const own = save.owned.theme.includes(k), eq = save.equip.theme===k;
       h += `<div class="item${eq?' eq':''}"><img alt="" src="${themeImage(k)}"><b>${T.name}</b><small>${T.desc}</small>${btnFor('theme',k,T.price,own,eq)}</div>`;
+    }
+    else if(shopTab==='gem'){
+      const t=totalStars(), n=trackNext();
+      h += `<div class="gem-head">${icon('gem','ic')}<b class="gems">${fmt(save.gems)}</b> gems
+        <small>${n ? `Next ${trackLabel(n)} at ${n.at}\u2605 \u00b7 ${n.at-t} to go` : 'Star track complete'}</small></div>`;
+      for(const it of GEM_SHOP){
+        h += `<div class="item"><b>${it.name}</b><small>${it.desc}</small>
+          <button class="btn gold sm" data-gem="${it.id}"${save.gems<it.gems?' disabled':''}>${icon('gem','ic')} ${it.gems}</button></div>`;
+      }
+      h += `<div class="gem-head" style="margin-top:10px">Get more gems<small>${
+        Billing.ready() ? 'One-time purchases, restored on any watch you sign in to.'
+                        : 'Purchases are unavailable in this build. Gems are earned from the star track, the 7-day streak and milestones.'}</small></div>`;
+      for(const pk of Billing.PACKS){
+        const price = Billing.priceFor(pk.id);
+        h += `<div class="item"><b>${pk.gems} gems</b><small>${pk.desc}</small>
+          <button class="btn sm" data-iap="${pk.id}"${Billing.ready()?'':' disabled'}>${price||'Buy'}</button></div>`;
+      }
+      $('#shop-grid').innerHTML = h; return;
     }
     else for(const [k,B] of Object.entries(BOOSTERS)){
       h += `<div class="item"><img alt="" src="${nodeImage({type:k,color:k==='wild'?null:'#3fa8ff',armor:0}, save.equip.skin, 76)}"><b>${B.name}</b><small>${B.desc}</small><span class="owned">Owned: ${save.boosters[k]||0}</span>
@@ -3320,6 +3430,57 @@ function equip(spec){
   const [cat, k] = spec.split(':'); save.equip[cat] = k; if(cat==='theme') applyTheme();
   persist(); Sound.swap(); Render.shop();
 }
+
+/* ============================= BILLING =============================
+   Gem packs are one-time products sold through the store's own billing.
+   Nothing is wired up here and nothing can be: a web page cannot take a
+   payment. provider stays null until the Android wrapper supplies one, so
+   every Buy button reports honestly instead of granting gems for free.
+   Wiring guide: BILLING.md                                              */
+const Billing = {
+  provider: null,
+  prices: {},
+  PACKS: [
+    {id:'gems_80',  sku:'gems_80',  gems:80,  desc:'A booster pack and change'},
+    {id:'gems_250', sku:'gems_250', gems:250, desc:'Most popular'},
+    {id:'gems_700', sku:'gems_700', gems:700, desc:'Best value'},
+  ],
+  ready(){ return !!this.provider; },
+  priceFor(id){ return this.prices[id] || null; },
+
+  async init(){
+    try{
+      if(window.AndroidBilling && typeof window.AndroidBilling.purchase === 'function'){
+        this.provider = 'bridge';
+        const p = JSON.parse(window.AndroidBilling.getPrices?.() || '{}');
+        this.PACKS.forEach(k=>{ if(p[k.sku]) this.prices[k.id] = p[k.sku]; });
+      }
+    }catch(e){ this.provider = null; }
+    return this.provider;
+  },
+
+  async purchase(id){
+    const pk = this.PACKS.find(p=>p.id===id); if(!pk) return;
+    if(!this.ready()){
+      const n = trackNext();
+      toast('Purchases unavailable', n ? `Earn ${trackLabel(n)} at ${n.at} stars` : 'Gems are earned from the star track', 'gem');
+      return;
+    }
+    try{
+      const r = await window.AndroidBilling.purchase(pk.sku);
+      await this.grant(pk, typeof r==='string' ? JSON.parse(r) : r);
+    }catch(err){ toast('Purchase did not complete', 'Nothing was charged', 'gem'); }
+  },
+
+  /* TODO before launch: POST {sku, token} to a server, confirm with
+     purchases.products.get, acknowledge within 3 days or Play auto-refunds.
+     Granting on the client alone can be faked on a rooted watch. */
+  async grant(pk, purchase){
+    save.gems += pk.gems; persist(); updateCoins();
+    Sound.coin(); buzz(20); Render.shop();
+    toast(`${pk.gems} gems added`, 'Thank you', 'gem');
+  },
+};
 
 /* ============================= FLOW ============================= */
 function openIntro(n){ introLevel = clamp(n, 1, Math.min(save.unlocked, CFG.LEVELS)); introSel = {}; UI.push('intro'); }
@@ -3496,6 +3657,8 @@ document.addEventListener('click', e=>{
   if(t.dataset.boost){ const k=t.dataset.boost; introSel[k] = !introSel[k]; t.classList.toggle('on', introSel[k]); return; }
   if(t.dataset.claim!==undefined){ claimMission(+t.dataset.claim); return; }
   if(t.dataset.buy){ buy(t.dataset.buy); return; }
+  if(t.dataset.gem){ spendGems(t.dataset.gem); return; }
+  if(t.dataset.iap){ Billing.purchase(t.dataset.iap); return; }
   if(t.dataset.equip){ equip(t.dataset.equip); return; }
   if(t.dataset.tab){
     if(t.closest('#shop-tabs')){ shopTab = t.dataset.tab; Render.shop(); }
@@ -3740,7 +3903,11 @@ function wConfirm(title, text, okLabel, onOk, danger){
 const _wMenu=Render.menu, _wIntro=Render.intro;
 Render.menu = function(){
   _wMenu.call(Render);
-  const s=$('#w-menu-stars'); if(s) s.textContent = `${totalStars()}/${CFG.LEVELS*3} stars`;
+  const s=$('#w-menu-stars');
+  if(s){
+    const t=totalStars(), n=trackNext();
+    s.textContent = n ? `${t}★ · ${n.at-t} to ${trackLabel(n)}` : `${t}/${CFG.LEVELS*3} stars`;
+  }
   wClock(); requestAnimationFrame(()=>wScale($('#s-menu .w-scroll')));
 };
 Render.levels = function(){ wDial(wSec); };
@@ -3843,6 +4010,7 @@ function init(){
   UI.stack = ['menu']; UI.apply(); Render.menu();
   resize(); initDemo();
   setupBack();
+  Billing.init().catch(()=>{});
   requestAnimationFrame(frame);
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ updateViewTarget(mode==='menu'); });
   setTimeout(()=>{ if(mode==='menu' && dailyState().can) dailyModal(); }, 1200);

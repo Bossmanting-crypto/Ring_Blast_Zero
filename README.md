@@ -20,9 +20,8 @@ Ring Blast Zero (`app/src/main/assets/index.html`).
 Designed round-first for Wear OS rather than shrunk from the phone layout:
 
 - Home: the board orbits as a dial with the time curved along the top bezel and
-  RING · BLAST · ZERO along the bottom; a glowing Play button sits in the
-  centre. One swipe or crown turn down shows the menu as Wear-style pill chips
-  that shrink and fade toward the curved edges.
+  a glowing Play button in the centre. One swipe or crown turn down shows the
+  menu as Wear-style pill chips that shrink and fade toward the curved edges.
 - Sector map: each sector is a clock face. Its 12 levels sit on the hour
   positions with the boss at 12 o'clock; swipe or turn the crown to move
   between sectors.
@@ -94,6 +93,38 @@ Wear OS apps must target API 35 or higher, which this project does.
 Rebuild the watch HTML from the game sources
 (`python3 build.py watch index.html`) and copy it to
 `app/src/main/assets/index.html`.
+
+## Progression and gems
+
+Stars are the spine: every level pays 1–3, and the star track turns the running
+total into the next visible goal. The menu's Sectors chip always reads
+"`N★ · M to <reward>`", so there is a reward a few levels away at any point.
+
+| Stars | Reward | | Stars | Reward |
+|---|---|---|---|---|
+| 6 | 150 coins | | 81 | Booster pack |
+| 15 | Booster pack | | 105 | 18 gems |
+| 27 | 8 gems | | 132 | 600 coins |
+| 42 | 300 coins | | 160 | 25 gems |
+| 60 | 12 gems | | 180 | 40 gems |
+
+Gems also come from day 7 of the daily streak. They spend on coin bundles and
+booster packs in the shop's Gems tab.
+
+Balance rules the code sticks to, deliberately:
+
+- Gems buy convenience and cosmetics, never power or progress. Nothing behind
+  gems is needed to finish a level.
+- Revive stays on coins, so the game never asks for money at the moment of
+  failure — the pattern that earns refund requests and 1-star reviews.
+- No energy, no timers, no randomised paid rewards. Loot boxes would add odds
+  disclosure and a heavier content rating for no real gain.
+- Every gem in the game can be earned by playing; money only skips the grind.
+
+Real payments are not wired up — `Billing.provider` stays null and the Buy
+buttons say so rather than granting gems. Three one-time products
+(`gems_80`, `gems_250`, `gems_700`) and the server verification step are
+described in `BILLING.md`.
 
 ## Names left unchanged on purpose
 
