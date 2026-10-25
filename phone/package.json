@@ -1,0 +1,23 @@
+{
+  "name": "ring-blast-zero-phone",
+  "version": "5.0.0",
+  "private": true,
+  "description": "Ring Blast Zero phone app (Capacitor wrapper). The watch app lives in ../app.",
+  "scripts": {
+    "html": "python3 make-phone-html.py",
+    "sync": "python3 make-phone-html.py && cap sync android",
+    "open": "cap open android",
+    "build:aab": "npm run sync && cd android && ./gradlew bundleRelease",
+    "build:apk": "npm run sync && cd android && ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/haptics": "^8.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.3"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "appId": "com.ringblastzero.game",
+  "appName": "Ring Blast Zero",
+  "webDir": "www",
+  "backgroundColor": "#05060f",
+  "server": { "androidScheme": "https" },
+  "android": {
+    "backgroundColor": "#05060f",
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SystemBars": { "insetsHandling": "css", "style": "DARK", "hidden": false }
+  }
+}

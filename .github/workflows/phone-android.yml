@@ -1,0 +1,121 @@
+name: Build Phone App Bundle
+
+# Phone build of Ring Blast Zero (Capacitor, in phone/). The watch build has its own workflow (android.yml).
+# Produces:
+#   ring-blast-zero-phone-aab -> app-release.aab for the Play phone tracks
+#   ring-blast-zero-phone-apk -> app-debug.apk to sideload onto a phone
+# Secrets: KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD
+# These are the SAME secrets the watch build uses: phone and watch must share one upload key.
+
+on:
+  push:
+    branches: [main, phone-build]
+    paths:
+      - 'phone/**'
+      - 'app/src/main/assets/index.html'
+      - '.github/workflows/phone-android.yml'
+  workflow_dispatch:
+    inputs:
+      versionCode:
+        description: 'versionCode (must exceed the last phone upload and stay below the watch build)'
+        required: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: phone
+    steps:
+      - uses: actions/checkout@v5
+
+      # Capacitor 8 requires Node 22+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: phone/package-lock.json
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Install Android SDK packages
+        run: |
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKM" --licenses > /dev/null || true
+          "$SDKM" "platforms;android-36" "build-tools;36.0.0" "platform-tools"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build phone HTML from the game file and sync
+        run: npm run sync
+
+      - name: Bump versionCode
+        if: github.event.inputs.versionCode != ''
+        run: |
+          sed -i "s/versionCode [0-9]*/versionCode ${{ github.event.inputs.versionCode }}/" android/app/build.gradle
+          grep -n "versionCode" android/app/build.gradle
+
+      - name: Decode keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::warning::No KEYSTORE_BASE64 secret. Building UNSIGNED — Play will reject this bundle."
+            exit 0
+          fi
+          CLEAN=$(printf '%s' "$KEYSTORE_BASE64" | tr -d ' \r\n\t')
+          if ! printf '%s' "$CLEAN" | base64 -di > android/upload-keystore.jks 2>/dev/null; then
+            echo "::error::KEYSTORE_BASE64 is not valid base64. Delete the secret and paste the value again."
+            exit 1
+          fi
+          if [ -z "$KEY_PASSWORD" ]; then KEY_PASSWORD="$KEYSTORE_PASSWORD"; fi
+          if ! keytool -list -keystore android/upload-keystore.jks -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" > /dev/null 2>&1; then
+            echo "::error::KEYSTORE_PASSWORD or KEY_ALIAS does not match the keystore."
+            exit 1
+          fi
+          printf 'storeFile=upload-keystore.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+            "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > android/keystore.properties
+          echo "Keystore written ($(stat -c%s android/upload-keystore.jks) bytes)"
+
+      - name: Build release bundle
+        working-directory: phone/android
+        run: ./gradlew bundleRelease --no-daemon --stacktrace
+
+      - name: Build debug APK
+        working-directory: phone/android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Report signing state
+        run: |
+          AAB=$(find android/app/build/outputs/bundle/release -name '*.aab' | head -1)
+          echo "Bundle: $AAB ($(du -h "$AAB" | cut -f1))"
+          if unzip -l "$AAB" | grep -qE "META-INF/.*\.(RSA|EC|DSA)"; then
+            echo "Signed — ready for the Play phone track."
+          else
+            echo "::warning::Bundle is UNSIGNED. Add the four keystore secrets and re-run."
+          fi
+
+      - name: Upload bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ring-blast-zero-phone-aab
+          path: phone/android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ring-blast-zero-phone-apk
+          path: phone/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: warn
+
+      - name: Clean up signing files
+        if: always()
+        run: rm -f android/upload-keystore.jks android/keystore.properties
